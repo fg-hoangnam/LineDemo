@@ -1,0 +1,21 @@
+server:
+  port: 8003
+  address: 0.0.0.0
+spring:
+  application:
+    name: line-demo
+  profiles:
+    active: local
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+security:
+  basic:
+    enabled: false
+

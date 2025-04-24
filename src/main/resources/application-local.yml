@@ -1,0 +1,85 @@
+SWAGGER_ENABLED: true
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trot_local?serverTimezone=Asia/Tokyo
+    username: root
+    password: ahihi123
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  kafka:
+    bootstrap-servers: "${KAFKA_SERVER}" # Assuming container name is kafkal
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer:
+        org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: myGroup
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max:
+        timeout: "${KAFKA_CONSUMER_TIMEOUT}"
+    listener:
+      missing-topics-fatal: false
+      ack-mode: manual_immediate #Commit ngay lập tức khi gọi acknowledgment.acknowledge().
+    topic:
+      send-notification:
+        name: "send-notification"
+        concurrent:
+          thread: 3
+      send-message:
+        name: "send-message"
+        concurrent:
+          thread: 3
+    messaging:
+      consumer:
+        pool:
+          size: "${KAFKA_CONSUMER_POOL}"
+          thread:
+            name:
+              prefix: "messaging-thread-pool-"
+      kafka:
+        groupId: "${spring.application.name}"
+        consumer:
+          batch: false
+          number:
+            of:
+              message:
+                in:
+                  batch: 1
+    graceful:
+      shutdown:
+        messaging:
+          consumer:
+            wait:
+              time:
+                max: 300
+  threads:
+    virtual:
+      enabled: true
+    pool-core-size: 10
+    max-pool-size: 20
+    queue-capacity: 500
+    name-prefix: "Send-Data-Line-"
+KAFKA_SERVER: localhost:9092
+KAFKA_CONSUMER_POOL: 30
+KAFKA_CONSUMER_TIMEOUT: 1800000
+line:
+  access-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
+  api:
+    base-url: "https://api.line.me"
+    rate-limit: 2000
+    message:
+      push: "/v2/bot/message/push"
+      get-limit-per-month: "/v2/bot/message/quota"
+      get-number-sent-message: "/v2/bot/message/quota/consumption"
+    noti:
+      push: "/bot/pnp/push"

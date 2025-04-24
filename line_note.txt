@@ -1,0 +1,10 @@
+Line office manager:
+- create message API
+- add webhook url
+- required LINE PNP permission
+
+Line developer console:
+- setting webhook
+- enable LINE Official Account features
+- issue channel access token
+- restrict which IP addresses can use this channel's long-lived channel access token to call LINE Platform's API
