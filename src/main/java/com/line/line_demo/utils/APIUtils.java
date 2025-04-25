@@ -2,6 +2,7 @@ package com.line.line_demo.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.line.line_demo.config.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,9 +31,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class APIUtils {
-
-    @Value("${line.access-token}")
-    private static String ACCESS_TOKEN;
 
     private static final Logger log = LoggerFactory.getLogger(APIUtils.class);
 
@@ -61,11 +56,14 @@ public class APIUtils {
             responseEntity = restTemplate.exchange(uri.toString(), method, requestEntity, JsonNode.class);
             return JsonMapperUtils.convertJsonToObject(JsonMapperUtils.writeValueAsString(responseEntity.getBody()), reference);
         } catch (HttpStatusCodeException e) {
+            if(HttpStatus.FORBIDDEN.equals(e.getStatusCode())){
+                throw ServiceException.forbidden(e.getMessage());
+            }
             log.info("[HttpStatusCodeException] Api Exception: {}", e.getMessage());
-            throw e;
+            throw ServiceException.badRequest(e.getMessage());
         } catch (Exception e) {
             log.info("Api Exception: {}", e.getMessage());
-            throw new ResourceAccessException(e.getMessage());
+            throw ServiceException.badRequest(e.getMessage());
         }
     }
 
@@ -78,18 +76,10 @@ public class APIUtils {
         return uriBuilder.build().toUri();
     }
 
-    public static MultiValueMap<String, String> getAdditionalHeader(Map<String, String> headers) {
-        MultiValueMap<String, String> additionalHeaders = new LinkedMultiValueMap<>();
-        additionalHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", ACCESS_TOKEN));
-        if (!CollectionUtils.isEmpty(headers)) {
-            headers.forEach(additionalHeaders::add);
-        }
-        return additionalHeaders;
-    }
 
     public static MultiValueMap<String, String> getAdditionalHeader(String accessToken, Map<String, String> headers) {
         MultiValueMap<String, String> additionalHeaders = new LinkedMultiValueMap<>();
-        additionalHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", StringUtils.isEmpty(accessToken) ? ACCESS_TOKEN : accessToken));
+        additionalHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken));
         if (!CollectionUtils.isEmpty(headers)) {
             headers.forEach(additionalHeaders::add);
         }

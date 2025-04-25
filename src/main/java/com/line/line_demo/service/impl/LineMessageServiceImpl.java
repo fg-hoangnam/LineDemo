@@ -1,6 +1,7 @@
 package com.line.line_demo.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.line.line_demo.config.exception.ServiceException;
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
 import com.line.line_demo.config.kafka.MessageData;
 import com.line.line_demo.dto.Event;
@@ -54,6 +55,9 @@ public class LineMessageServiceImpl implements LineMessageService {
     @Value("${line.api.message.get-number-sent-message}")
     private String NUM_SENT_MESSAGE;
 
+    @Value("${line.access-token}")
+    private String ACCESS_TOKEN;
+
     @SuppressWarnings("rawtypes")
     private final KafkaTemplate kafkaTemplate;
 
@@ -74,7 +78,7 @@ public class LineMessageServiceImpl implements LineMessageService {
                             (BASE_URL + SEND_MESSAGE),
                             HttpMethod.POST,
                             null,
-                            APIUtils.getAdditionalHeader(null),
+                            APIUtils.getAdditionalHeader(ACCESS_TOKEN, null),
                             null,
                             data,
                             new TypeReference<>() {
@@ -149,7 +153,7 @@ public class LineMessageServiceImpl implements LineMessageService {
                     (BASE_URL + SEND_MESSAGE),
                     HttpMethod.POST,
                     null,
-                    APIUtils.getAdditionalHeader(Map.of("X-Line-Delivery-Tag", "test-message")),
+                    APIUtils.getAdditionalHeader(ACCESS_TOKEN, Map.of("X-Line-Delivery-Tag", "test-message")),
                     null,
                     new SendBody(
                             lineUser.getLindId(),
@@ -159,7 +163,7 @@ public class LineMessageServiceImpl implements LineMessageService {
                     }
             );
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw ServiceException.badRequest(e.getMessage());
         }
     }
 
@@ -204,14 +208,14 @@ public class LineMessageServiceImpl implements LineMessageService {
                     (BASE_URL + LIMIT_PER_MONTH),
                     HttpMethod.GET,
                     null,
-                    APIUtils.getAdditionalHeader(null),
+                    APIUtils.getAdditionalHeader(ACCESS_TOKEN, null),
                     null,
                     null,
                     new TypeReference<>() {
                     }
             );
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw ServiceException.badRequest(e.getMessage());
         }
     }
 
@@ -224,14 +228,14 @@ public class LineMessageServiceImpl implements LineMessageService {
                     (BASE_URL + NUM_SENT_MESSAGE),
                     HttpMethod.GET,
                     null,
-                    APIUtils.getAdditionalHeader(null),
+                    APIUtils.getAdditionalHeader(ACCESS_TOKEN, null),
                     null,
                     null,
                     new TypeReference<>() {
                     }
             );
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw ServiceException.badRequest(e.getMessage());
         }
     }
 
@@ -246,7 +250,7 @@ public class LineMessageServiceImpl implements LineMessageService {
                 numSentMessage.getTotalUsage() >= limit.getSendLimit()
         ){
             log.info("[Send Message] Failed. Total Usage: {}", numSentMessage.getTotalUsage());
-            throw new RuntimeException("The number of times sending the message exceeds the limit");
+            throw ServiceException.badRequest("The number of times sending the message exceeds the limit");
         }
     }
 

@@ -26,7 +26,7 @@ public class LineNotificationController {
         return ResponseEntity.ok(lineService.sendMultipleNotification(request));
     }
 
-    @PostMapping("/send-noti")
+    @GetMapping("/send-noti")
     public ResponseEntity<?> sendNotification(
            @RequestParam String message,
            @RequestParam String phone

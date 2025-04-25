@@ -1,6 +1,7 @@
 package com.line.line_demo.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.line.line_demo.config.exception.ServiceException;
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
 import com.line.line_demo.config.kafka.MessageData;
 import com.line.line_demo.dto.Event;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.rmi.ServerException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,12 +45,14 @@ public class LineNotificationServiceImpl implements LineNotificationService {
     @Value("${line.api.rate-limit}")
     private int RATE_LIMIT;
 
+    @Value("${line.access-token}")
+    private String ACCESS_TOKEN;
+
     @Value("${line.api.base-url}")
     private String BASE_URL;
 
     @Value("${line.api.noti.push}")
     private String SEND_NOTI;
-
 
     @SuppressWarnings("rawtypes")
     private final KafkaTemplate kafkaTemplate;
@@ -61,11 +65,11 @@ public class LineNotificationServiceImpl implements LineNotificationService {
         try {
             APIUtils apiUtils = new APIUtils();
             if(phone != null && message != null){
-                return apiUtils.callApiSendJson(
+                Object res = apiUtils.callApiSendJson(
                         (BASE_URL + SEND_NOTI),
                         HttpMethod.POST,
                         null,
-                        APIUtils.getAdditionalHeader(Map.of("X-Line-Delivery-Tag", "test-noti")),
+                        APIUtils.getAdditionalHeader(ACCESS_TOKEN, Map.of("X-Line-Delivery-Tag", "test-noti")),
                         null,
                         new SendBody(
                                 hashPhoneNumber(phone),
@@ -74,10 +78,11 @@ public class LineNotificationServiceImpl implements LineNotificationService {
                         new TypeReference<>() {
                         }
                 );
+                return res;
             }
-            return null;
+            throw ServiceException.badRequest("Request to enter Phone Number and Messages!");
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw ServiceException.badRequest(e.getMessage());
         }
     }
 
@@ -95,7 +100,7 @@ public class LineNotificationServiceImpl implements LineNotificationService {
                             (BASE_URL + SEND_NOTI),
                             HttpMethod.POST,
                             null,
-                            APIUtils.getAdditionalHeader(Map.of("X-Line-Delivery-Tag", "test-noti")),
+                            APIUtils.getAdditionalHeader(ACCESS_TOKEN, Map.of("X-Line-Delivery-Tag", "test-noti")),
                             null,
                             data,
                             new TypeReference<>() {
