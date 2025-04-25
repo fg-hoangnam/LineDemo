@@ -17,13 +17,5 @@ public interface LineService {
      */
     WebhookEvent handleWebhook(String payload);
 
-    /**
-     * Xử lý callback payload từ LINE (thường dùng cho postback hoặc interactive message).
-     *
-     * @param payload chuỗi JSON raw callback
-     * @return kết quả tùy theo logic xử lý
-     */
-    Object handleCallback(String payload);
-
 }
 

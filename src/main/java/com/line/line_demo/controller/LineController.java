@@ -16,12 +16,7 @@ public class LineController {
 
     private final LineService lineService;
 
-    @GetMapping("/callback")
-    public ResponseEntity<Object> handleCallback(@RequestParam String payload) {
-        return ResponseEntity.ok(lineService.handleCallback(payload));
-    }
-
-    @PostMapping("/webhook")
+    @PostMapping("/callback")
     public ResponseEntity<WebhookEvent> handleWebhook(@RequestBody String payload) {
         return ResponseEntity.ok(lineService.handleWebhook(payload));
     }

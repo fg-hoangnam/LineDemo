@@ -59,12 +59,6 @@ public class LineServiceImpl implements LineService {
         return data;
     }
 
-    @Override
-    public Object handleCallback(String payload) {
-        log.info("[Line Callback] callback : {}", payload);
-        return payload;
-    }
-
     private void saveLineAccountInfoId(WebhookEvent data) {
         if (!CollectionUtils.isEmpty(data.getEvents())) {
             List<String> userIds = data.getEvents().stream().map(Event::getSource).map(Source::getUserId).toList();
