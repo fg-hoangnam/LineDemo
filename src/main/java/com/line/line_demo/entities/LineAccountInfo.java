@@ -1,25 +1,22 @@
 package com.line.line_demo.entities;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Table(name = "line_user",
+@Table(name = "line_account_info",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_line_user_line_user_id",
+                        name = "uk_line_account_info_line_id",
                         columnNames = {"line_id"}
                 )
         })
 @Entity
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineUser {
+public class LineAccountInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +27,10 @@ public class LineUser {
     String email;
 
     @Column(name = "line_id", nullable = false)
-    String lindId;
+    String lineId;
 
-    public LineUser(String lineUserId){
-        this.lindId = lineUserId;
+    public LineAccountInfo(String lineUserId){
+        this.lineId = lineUserId;
     }
 
 }

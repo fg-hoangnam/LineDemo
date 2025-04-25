@@ -1,8 +1,7 @@
-SWAGGER_ENABLED: true
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trot_local?serverTimezone=Asia/Tokyo
+    url: jdbc:mysql://localhost:3306/line_local?serverTimezone=Asia/Tokyo
     username: root
     password: ahihi123
   jpa:

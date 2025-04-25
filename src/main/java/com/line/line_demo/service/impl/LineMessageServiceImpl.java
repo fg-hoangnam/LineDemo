@@ -4,16 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.line.line_demo.config.exception.ServiceException;
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
 import com.line.line_demo.config.kafka.MessageData;
-import com.line.line_demo.dto.Event;
 import com.line.line_demo.dto.Message;
-import com.line.line_demo.dto.Source;
-import com.line.line_demo.dto.WebhookEvent;
 import com.line.line_demo.dto.request.SendBody;
-import com.line.line_demo.entities.LineUser;
+import com.line.line_demo.entities.LineAccountInfo;
 import com.line.line_demo.event.base.DataLine;
-import com.line.line_demo.repository.LineUserRepository;
+import com.line.line_demo.repository.LineAccountInfoRepository;
 import com.line.line_demo.service.LineMessageService;
-import com.line.line_demo.service.LineService;
 import com.line.line_demo.utils.APIUtils;
 import com.line.line_demo.utils.JsonMapperUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +19,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class LineMessageServiceImpl implements LineMessageService {
 
-    private final LineUserRepository lineUserRepository;
+    private final LineAccountInfoRepository LineAccountInfoRepository;
 
     @Value("${line.api.rate-limit}")
     private int RATE_LIMIT;
@@ -113,11 +106,11 @@ public class LineMessageServiceImpl implements LineMessageService {
     public Object sendMultipleMessage(List<Message> request) {
         validateLimitSendMessage();
         // user executor thread to handle list
-        LineUser lineUser = lineUserRepository.findAll().getFirst();
+        LineAccountInfo LineAccountInfo = LineAccountInfoRepository.findAll().getFirst();
         List<SendBody> data = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             data.add(new SendBody(
-                    lineUser.getLindId(),
+                    LineAccountInfo.getLineId(),
                     Collections.singletonList(new Message("text", "hi"))
             ));
         }
@@ -148,7 +141,7 @@ public class LineMessageServiceImpl implements LineMessageService {
         validateLimitSendMessage();
         try {
             APIUtils apiUtils = new APIUtils();
-            LineUser lineUser = lineUserRepository.findAll().getFirst();
+            LineAccountInfo LineAccountInfo = LineAccountInfoRepository.findAll().getFirst();
             return apiUtils.callApiSendJson(
                     (BASE_URL + SEND_MESSAGE),
                     HttpMethod.POST,
@@ -156,7 +149,7 @@ public class LineMessageServiceImpl implements LineMessageService {
                     APIUtils.getAdditionalHeader(ACCESS_TOKEN, Map.of("X-Line-Delivery-Tag", "test-message")),
                     null,
                     new SendBody(
-                            lineUser.getLindId(),
+                            LineAccountInfo.getLineId(),
                             Collections.singletonList(new Message("text", message))
                     ),
                     new TypeReference<>() {
@@ -175,11 +168,11 @@ public class LineMessageServiceImpl implements LineMessageService {
     public Object sendMultipleMessageNonKafka(List<Message> request) {
         Long start = System.currentTimeMillis();
         validateLimitSendMessage();
-        LineUser lineUser = lineUserRepository.findAll().getFirst();
+        LineAccountInfo LineAccountInfo = LineAccountInfoRepository.findAll().getFirst();
         List<SendBody> data = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             data.add(new SendBody(
-                    lineUser.getLindId(),
+                    LineAccountInfo.getLineId(),
                     Collections.singletonList(new Message("text", "hi"))
             ));
         }

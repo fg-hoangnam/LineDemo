@@ -1,11 +1,7 @@
 package com.line.line_demo.service;
 
-import com.line.line_demo.dto.Message;
 import com.line.line_demo.dto.WebhookEvent;
-import com.line.line_demo.dto.request.SendBody;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 /**
  * LineService định nghĩa các hành vi tương tác với LINE Messaging API,
  * bao gồm xử lý webhook, gửi message/notification đơn lẻ hoặc hàng loạt,

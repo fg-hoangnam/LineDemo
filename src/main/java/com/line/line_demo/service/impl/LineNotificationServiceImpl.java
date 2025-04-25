@@ -1,19 +1,12 @@
 package com.line.line_demo.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.line.line_demo.config.exception.ServiceException;
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
 import com.line.line_demo.config.kafka.MessageData;
-import com.line.line_demo.dto.Event;
-import com.line.line_demo.dto.Message;
-import com.line.line_demo.dto.Source;
-import com.line.line_demo.dto.WebhookEvent;
 import com.line.line_demo.dto.request.SendBody;
-import com.line.line_demo.entities.LineUser;
 import com.line.line_demo.event.base.DataLine;
-import com.line.line_demo.repository.LineUserRepository;
+import com.line.line_demo.repository.LineAccountInfoRepository;
 import com.line.line_demo.service.LineNotificationService;
-import com.line.line_demo.service.LineService;
 import com.line.line_demo.utils.APIUtils;
 import com.line.line_demo.utils.JsonMapperUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +17,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
-import java.rmi.ServerException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -40,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class LineNotificationServiceImpl implements LineNotificationService {
 
-    private final LineUserRepository lineUserRepository;
+    private final LineAccountInfoRepository lineUserRepository;
 
     @Value("${line.api.rate-limit}")
     private int RATE_LIMIT;
@@ -58,33 +46,6 @@ public class LineNotificationServiceImpl implements LineNotificationService {
     private final KafkaTemplate kafkaTemplate;
 
     private final KafkaTopicConfig kafkaTopicConfig;
-
-    @Override
-    public Object sendNotification(String phone, String message) {
-        log.info("[Send Noti] text: {}", message);
-        try {
-            APIUtils apiUtils = new APIUtils();
-            if(phone != null && message != null){
-                Object res = apiUtils.callApiSendJson(
-                        (BASE_URL + SEND_NOTI),
-                        HttpMethod.POST,
-                        null,
-                        APIUtils.getAdditionalHeader(ACCESS_TOKEN, Map.of("X-Line-Delivery-Tag", "test-noti")),
-                        null,
-                        new SendBody(
-                                hashPhoneNumber(phone),
-                                Collections.singletonList(new Message("text", message))
-                        ),
-                        new TypeReference<>() {
-                        }
-                );
-                return res;
-            }
-            throw ServiceException.badRequest("Request to enter Phone Number and Messages!");
-        } catch (Exception e) {
-            throw ServiceException.badRequest(e.getMessage());
-        }
-    }
 
     /**
      * Tương tự `sendMessage` nhưng dùng cho loại thông báo (notification).
@@ -130,8 +91,25 @@ public class LineNotificationServiceImpl implements LineNotificationService {
     }
 
     @Override
-    public Object sendMultipleNotification(List<Message> request) {
+    public Object sendMultipleNotification(List<SendBody> request) {
         //todo: send kafka template
+        List<List<SendBody>> result = new ArrayList<>();
+        int totalSize = request.size();
+        int limit = RATE_LIMIT;
+        if (request.size() > limit) {
+            for (int i = 0; i < totalSize; i += (i + limit > totalSize ? totalSize - i : limit)) {
+                result.add(new ArrayList<>(request.subList(i, i + (i + limit > totalSize ? totalSize - i : limit))));
+            }
+        }else{
+            result.add(request);
+        }
+
+        result.forEach(sendBodies -> {
+            kafkaTemplate.send(
+                    kafkaTopicConfig.getSendNotification(),
+                    JsonMapperUtils.toJson(new MessageData<>(new DataLine(sendBodies)))
+            );
+        });
         return null;
     }
 

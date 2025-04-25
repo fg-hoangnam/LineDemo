@@ -5,7 +5,6 @@ import com.line.line_demo.config.kafka.MessageListener;
 import com.line.line_demo.event.base.DataLine;
 import com.line.line_demo.service.LineMessageService;
 import com.line.line_demo.service.LineNotificationService;
-import com.line.line_demo.service.LineService;
 import com.line.line_demo.utils.JsonMapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

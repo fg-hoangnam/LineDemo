@@ -1,45 +1,27 @@
 package com.line.line_demo.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
-import com.line.line_demo.config.kafka.MessageData;
 import com.line.line_demo.dto.Event;
-import com.line.line_demo.dto.Message;
 import com.line.line_demo.dto.Source;
 import com.line.line_demo.dto.WebhookEvent;
-import com.line.line_demo.dto.request.SendBody;
-import com.line.line_demo.entities.LineUser;
-import com.line.line_demo.event.base.DataLine;
-import com.line.line_demo.repository.LineUserRepository;
+import com.line.line_demo.entities.LineAccountInfo;
+import com.line.line_demo.repository.LineAccountInfoRepository;
 import com.line.line_demo.service.LineService;
-import com.line.line_demo.utils.APIUtils;
 import com.line.line_demo.utils.JsonMapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LineServiceImpl implements LineService {
 
-    private final LineUserRepository lineUserRepository;
+    private final LineAccountInfoRepository LineAccountInfoRepository;
 
     @Value("${line.access-token}")
     private String ACCESS_TOKEN;
@@ -72,7 +54,7 @@ public class LineServiceImpl implements LineService {
         log.info("[Received webhook] data : {}", payload);
         WebhookEvent data = JsonMapperUtils.convertJsonToObject(payload, WebhookEvent.class);
         if (ObjectUtils.isEmpty(data)) return null;
-        saveLineUserId(data);
+        saveLineAccountInfoId(data);
         log.info("[Webhook processed] data : {}", payload);
         return data;
     }
@@ -83,15 +65,15 @@ public class LineServiceImpl implements LineService {
         return payload;
     }
 
-    private void saveLineUserId(WebhookEvent data) {
+    private void saveLineAccountInfoId(WebhookEvent data) {
         if (!CollectionUtils.isEmpty(data.getEvents())) {
             List<String> userIds = data.getEvents().stream().map(Event::getSource).map(Source::getUserId).toList();
             if (!CollectionUtils.isEmpty(userIds)) {
-                List<String> userExisted = lineUserRepository.findAllByUserIdIn(userIds);
+                List<String> userExisted = LineAccountInfoRepository.fetchAllByUserIdIn(userIds);
                 if (CollectionUtils.isEmpty(userExisted) || userExisted.size() != userIds.size()) {
-                    List<LineUser> newUserList = lineUserRepository.saveAll(userIds.stream()
+                    List<LineAccountInfo> newUserList = LineAccountInfoRepository.saveAll(userIds.stream()
                             .filter(u -> !userExisted.contains(u))
-                            .map(LineUser::new)
+                            .map(LineAccountInfo::new)
                             .toList());
                     log.info("[Save line userId] success: {}", newUserList);
                 }

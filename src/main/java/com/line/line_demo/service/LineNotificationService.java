@@ -1,20 +1,11 @@
 package com.line.line_demo.service;
 
-import com.line.line_demo.dto.Message;
 import com.line.line_demo.dto.request.SendBody;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface LineNotificationService {
-
-    /**
-     * Gửi một notification đơn giản dạng văn bản.
-     *
-     * @param message nội dung notification
-     * @return kết quả gửi
-     */
-    Object sendNotification(String phone, String message);
 
     /**
      * Gửi notification async với cấu trúc `SendBody`.
@@ -32,11 +23,11 @@ public interface LineNotificationService {
     void handleSendNotification(List<SendBody> input);
 
     /**
-     * Gửi nhiều notification theo định dạng `Message`.
+     * Gửi nhiều notification theo định dạng `SendBody`.
      *
      * @param request danh sách message notification
      * @return kết quả gửi
      */
-    Object sendMultipleNotification(List<Message> request);
+    Object sendMultipleNotification(List<SendBody> request);
 
 }
