@@ -25,12 +25,6 @@ public class OpenApiConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
                 ))
-                .servers(
-                        List.of(
-                                new Server().url("https://amusing-faithful-pig.ngrok-free.app"),
-                                new Server().url("*")
-                        )
-                )
                 .info(new Info()
                         .title("Gzai API")
                         .version("1.0")
