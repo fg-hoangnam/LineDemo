@@ -72,6 +72,9 @@ KAFKA_SERVER: localhost:9092
 KAFKA_CONSUMER_POOL: 30
 KAFKA_CONSUMER_TIMEOUT: 1800000
 line:
+  bot:
+    channel-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
+    channel-secret: "aa5d3156145d59dbceffa279469d18cb"
   access-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
   api:
     base-url: "https://api.line.me"

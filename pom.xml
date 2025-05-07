@@ -76,6 +76,49 @@
 			<version>1.18.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-api-client -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-api-client</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-jackson -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-jackson</artifactId>
+			<version>9.7.1</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-model -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-model</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-client-base -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-client-base</artifactId>
+			<version>9.7.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-webhook -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-webhook</artifactId>
+			<version>9.7.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-spring-boot-handler -->
+		<dependency>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-spring-boot-handler</artifactId>
+			<version>9.7.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -18,4 +18,6 @@ public interface LineAccountInfoRepository extends JpaRepository<LineAccountInfo
 """)
     List<String> fetchAllByUserIdIn(Collection<String> userIds);
 
+    boolean existsByLineId(String lineId);
+
 }

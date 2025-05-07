@@ -1,21 +1,24 @@
 package com.line.line_demo.service.impl;
 
 import com.line.line_demo.config.kafka.KafkaTopicConfig;
-import com.line.line_demo.dto.Event;
-import com.line.line_demo.dto.Source;
-import com.line.line_demo.dto.WebhookEvent;
 import com.line.line_demo.entities.LineAccountInfo;
 import com.line.line_demo.repository.LineAccountInfoRepository;
 import com.line.line_demo.service.LineService;
 import com.line.line_demo.utils.JsonMapperUtils;
+import com.linecorp.bot.client.LineMessagingClient;
+import com.linecorp.bot.model.PushMessage;
+import com.linecorp.bot.model.ReplyMessage;
+import com.linecorp.bot.model.message.FlexMessage;
+import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.flex.container.FlexContainer;
+import com.linecorp.bot.webhook.model.MessageEvent;
+import com.linecorp.bot.webhook.model.PostbackEvent;
+import com.linecorp.bot.webhook.model.TextMessageContent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,26 +26,10 @@ public class LineServiceImpl implements LineService {
 
     private final LineAccountInfoRepository LineAccountInfoRepository;
 
-    @Value("${line.access-token}")
-    private String ACCESS_TOKEN;
+    private final LineMessagingClient lineMessagingClient;
 
     @Value("${line.api.rate-limit}")
     private int RATE_LIMIT;
-
-    @Value("${line.api.base-url}")
-    private String BASE_URL;
-
-    @Value("${line.api.message.push}")
-    private String SEND_MESSAGE;
-
-    @Value("${line.api.noti.push}")
-    private String SEND_NOTI;
-
-    @Value("${line.api.message.get-limit-per-month}")
-    private String LIMIT_PER_MONTH;
-
-    @Value("${line.api.message.get-number-sent-message}")
-    private String NUM_SENT_MESSAGE;
 
     @SuppressWarnings("rawtypes")
     private final KafkaTemplate kafkaTemplate;
@@ -50,28 +37,167 @@ public class LineServiceImpl implements LineService {
     private final KafkaTopicConfig kafkaTopicConfig;
 
     @Override
-    public WebhookEvent handleWebhook(String payload) {
-        log.info("[Received webhook] data : {}", payload);
-        WebhookEvent data = JsonMapperUtils.convertJsonToObject(payload, WebhookEvent.class);
-        if (ObjectUtils.isEmpty(data)) return null;
-        saveLineAccountInfoId(data);
-        log.info("[Webhook processed] data : {}", payload);
-        return data;
+    public void handleMessageEvent(MessageEvent event) {
+        log.info("[Received webhook] data : {}", event);
+        log.info("[Received webhook] User Profile : {}", lineMessagingClient.getProfile(event.source().userId()));
+        saveLineAccountInfoId(event.source().userId());
+        if(event.message() instanceof TextMessageContent){
+            if(((TextMessageContent) event.message()).text().equals("flex")){
+
+            }
+        }
+
+        sendFlexMessage(null, event.replyToken());
     }
 
-    private void saveLineAccountInfoId(WebhookEvent data) {
-        if (!CollectionUtils.isEmpty(data.getEvents())) {
-            List<String> userIds = data.getEvents().stream().map(Event::getSource).map(Source::getUserId).toList();
-            if (!CollectionUtils.isEmpty(userIds)) {
-                List<String> userExisted = LineAccountInfoRepository.fetchAllByUserIdIn(userIds);
-                if (CollectionUtils.isEmpty(userExisted) || userExisted.size() != userIds.size()) {
-                    List<LineAccountInfo> newUserList = LineAccountInfoRepository.saveAll(userIds.stream()
-                            .filter(u -> !userExisted.contains(u))
-                            .map(LineAccountInfo::new)
-                            .toList());
-                    log.info("[Save line userId] success: {}", newUserList);
+    @Override
+    public void handlePostbackEvent(PostbackEvent event) {
+        //
+    }
+
+    private void sendFlexMessage(String userId, String replyToken){
+
+        String flexJson = """
+                {
+                  "type": "bubble",
+                  "hero": {
+                    "type": "image",
+                    "url": "https://developers-resource.landpress.line.me/fx/img/01_2_restaurant.png",
+                    "size": "full",
+                    "aspectRatio": "20:13",
+                    "aspectMode": "cover",
+                    "action": {
+                      "type": "uri",
+                      "uri": "https://line.me/"
+                    }
+                  },
+                  "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "md",
+                    "action": {
+                      "type": "uri",
+                      "uri": "https://line.me/"
+                    },
+                    "contents": [
+                      {
+                        "type": "text",
+                        "text": "Brown's Burger",
+                        "size": "xl",
+                        "weight": "bold"
+                      },
+                      {
+                        "type": "box",
+                        "layout": "vertical",
+                        "spacing": "sm",
+                        "contents": [
+                          {
+                            "type": "box",
+                            "layout": "baseline",
+                            "contents": [
+                              {
+                                "type": "icon",
+                                "url": "https://developers-resource.landpress.line.me/fx/img/restaurant_regular_32.png"
+                              },
+                              {
+                                "type": "text",
+                                "text": "$10.5",
+                                "weight": "bold",
+                                "margin": "sm",
+                                "flex": 0
+                              },
+                              {
+                                "type": "text",
+                                "text": "400kcl",
+                                "size": "sm",
+                                "align": "end",
+                                "color": "#aaaaaa"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "box",
+                            "layout": "baseline",
+                            "contents": [
+                              {
+                                "type": "icon",
+                                "url": "https://developers-resource.landpress.line.me/fx/img/restaurant_large_32.png"
+                              },
+                              {
+                                "type": "text",
+                                "text": "$15.5",
+                                "weight": "bold",
+                                "margin": "sm",
+                                "flex": 0
+                              },
+                              {
+                                "type": "text",
+                                "text": "550kcl",
+                                "size": "sm",
+                                "align": "end",
+                                "color": "#aaaaaa"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "text": "Sauce, Onions, Pickles, Lettuce & Cheese",
+                        "wrap": true,
+                        "color": "#aaaaaa",
+                        "size": "xxs"
+                      }
+                    ]
+                  },
+                  "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                      {
+                        "type": "button",
+                        "style": "primary",
+                        "color": "#905c44",
+                        "margin": "xxl",
+                        "action": {
+                          "type": "uri",
+                          "label": "Add to Cart",
+                          "uri": "https://line.me/"
+                        }
+                      }
+                    ]
+                  }
                 }
-            }
+                """;
+
+        FlexContainer flexContainer = JsonMapperUtils.convertJsonToObject(flexJson, FlexContainer.class);
+
+        lineMessagingClient.replyMessage(
+                new ReplyMessage(
+                        replyToken,
+                        FlexMessage.builder().altText("alt text").contents(flexContainer).build()
+                )
+        );
+    }
+
+    private void sendTextMessage(String userId){
+                lineMessagingClient.pushMessage(
+                new PushMessage(
+                        userId,
+                        TextMessage.builder()
+                                .text("Hello push").build()
+                )
+        );
+    }
+
+    private void createRichMenu(String userId){
+
+    }
+
+    private void saveLineAccountInfoId(String userId) {
+        if (!LineAccountInfoRepository.existsByLineId(userId)) {
+            LineAccountInfo newUserList = LineAccountInfoRepository.save(new LineAccountInfo(userId));
+            log.info("[Save line userId] success: {}", newUserList);
         }
     }
 

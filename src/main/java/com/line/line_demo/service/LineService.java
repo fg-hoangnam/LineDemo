@@ -1,6 +1,10 @@
 package com.line.line_demo.service;
 
 import com.line.line_demo.dto.WebhookEvent;
+import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.webhook.model.CallbackRequest;
+import com.linecorp.bot.webhook.model.MessageEvent;
+import com.linecorp.bot.webhook.model.PostbackEvent;
 
 /**
  * LineService định nghĩa các hành vi tương tác với LINE Messaging API,
@@ -15,7 +19,9 @@ public interface LineService {
      * @param payload chuỗi JSON raw từ LINE webhook
      * @return đối tượng WebhookEvent đã parse
      */
-    WebhookEvent handleWebhook(String payload);
+    void handleMessageEvent(MessageEvent event);
+
+    void handlePostbackEvent(PostbackEvent event);
 
 }
 

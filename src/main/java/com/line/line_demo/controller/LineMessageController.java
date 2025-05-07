@@ -23,7 +23,6 @@ public class LineMessageController {
 
     private final LineMessageService lineService;
 
-
     @PostMapping("/send-message")
     public ResponseEntity<?> sendMessage(String accessToken, String message){
         return ResponseEntity.ok(lineService.sendMessage(accessToken, message));
