@@ -6,6 +6,7 @@ import com.line.line_demo.service.LineService;
 import com.linecorp.bot.spring.boot.handler.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.handler.annotation.LineMessageHandler;
 import com.linecorp.bot.webhook.model.MessageEvent;
+import com.linecorp.bot.webhook.model.PnpDeliveryCompletionEvent;
 import com.linecorp.bot.webhook.model.PostbackEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -58,7 +58,7 @@ public class LineServiceImpl implements LineService {
     private void sendFlexMessage(String userId, String replyToken){
 
         String flexJson = """
-                {
+                  {
                   "type": "bubble",
                   "hero": {
                     "type": "image",
@@ -181,12 +181,12 @@ public class LineServiceImpl implements LineService {
     }
 
     private void sendTextMessage(String userId){
-                lineMessagingClient.pushMessage(
-                new PushMessage(
-                        userId,
-                        TextMessage.builder()
-                                .text("Hello push").build()
-                )
+        lineMessagingClient.pushMessage(
+            new PushMessage(
+                userId,
+                TextMessage.builder()
+                    .text("Hello push").build()
+            )
         );
     }
 

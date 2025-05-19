@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql_line
-    restart: always
+    restart: no
     environment:
       MYSQL_ROOT_PASSWORD: ahihi123
       MYSQL_DATABASE: line_local
