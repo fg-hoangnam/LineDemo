@@ -22,7 +22,7 @@ import java.util.Objects;
 public class LineMessageController {
 
     private final LineMessageService lineService;
-    // 1
+    // 4
     @PostMapping("/send-message")
     public ResponseEntity<?> sendMessage(String accessToken, String message){
         return ResponseEntity.ok(lineService.sendMessage(accessToken, message));
