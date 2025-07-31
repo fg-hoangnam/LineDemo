@@ -18,7 +18,7 @@ import java.util.List;
 public class LineTestController {
 
 
-    @PostMapping("/callback") // Xử lý sự kiện tin nhắn dạng Text
+    @PostMapping("/callback") // Xử lý sự kiện tin nhắn dạng Text 4
     public void handleTextMessageEvent(
             HttpServletRequest request,
             @RequestBody CallbackRequest event
