@@ -113,11 +113,11 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.linecorp.bot/line-bot-spring-boot-handler -->
-		<dependency>
-			<groupId>com.linecorp.bot</groupId>
-			<artifactId>line-bot-spring-boot-handler</artifactId>
-			<version>9.7.1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.linecorp.bot</groupId>-->
+<!--			<artifactId>line-bot-spring-boot-handler</artifactId>-->
+<!--			<version>9.7.1</version>-->
+<!--		</dependency>-->
 
 	</dependencies>
 

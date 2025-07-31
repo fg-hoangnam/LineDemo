@@ -1,9 +1,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/line_local?serverTimezone=Asia/Tokyo
+#    url: jdbc:mysql://localhost:3306/line_local?serverTimezone=Asia/Tokyo
+#    username: root
+#    password: ahihi123
+    url: jdbc:mysql://localhost:3306/accrete_message_tracking?serverTimezone=Asia/Tokyo
     username: root
-    password: ahihi123
+    password: root
   jpa:
     show-sql: true
     hibernate:
@@ -72,9 +75,9 @@ KAFKA_SERVER: localhost:9092
 KAFKA_CONSUMER_POOL: 30
 KAFKA_CONSUMER_TIMEOUT: 1800000
 line:
-  bot:
-    channel-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
-    channel-secret: "aa5d3156145d59dbceffa279469d18cb"
+#  bot:
+#    channel-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
+#    channel-secret: "aa5d3156145d59dbceffa279469d18cb"
   access-token: "fXj9awxgDNWz4kQePeMa2p3feQXdeXgBM0njxymGHPmMq53p737D3qxtU1ECNVKdB353lK89nwoZTvSHl6lshUD11XFNMRMxoSWiTG2ql2UGkueIA9lHFEvIRFe//tYFyt6b6TmsmFEa96ZBppnB/AdB04t89/1O/w1cDnyilFU="
   api:
     base-url: "https://api.line.me"

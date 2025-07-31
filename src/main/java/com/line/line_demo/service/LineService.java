@@ -1,8 +1,8 @@
 package com.line.line_demo.service;
 
-import com.line.line_demo.dto.WebhookEvent;
-import com.linecorp.bot.model.message.TextMessage;
-import com.linecorp.bot.webhook.model.CallbackRequest;
+//import com.line.line_demo.dto.WebhookEvent;
+//import com.linecorp.bot.model.message.TextMessage;
+//import com.linecorp.bot.webhook.model.CallbackRequest;
 import com.linecorp.bot.webhook.model.MessageEvent;
 import com.linecorp.bot.webhook.model.PostbackEvent;
 
